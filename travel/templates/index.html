@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EasyTravels | Flights, Destination Hotels & AI Assistant</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
+
+  <!-- Option 1: Modern Pill & Blurred Navbar (Floating Style) -->
+  <header class="sticky top-0 z-50 px-4 py-3 bg-slate-900/90 backdrop-blur-md border-b border-white/10 shadow-lg">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="showPage('home')">
+        <div class="bg-gradient-to-tr from-indigo-600 to-indigo-400 text-white p-2.5 rounded-2xl shadow-lg shadow-indigo-500/30">
+          <i data-lucide="plane" class="w-6 h-6"></i>
+        </div>
+        <span class="font-extrabold text-2xl text-white tracking-wider">Easy<span class="text-indigo-400">Travels</span></span>
+      </div>
+
+      <!-- Central Navigation Links -->
+      <nav class="hidden md:flex items-center space-x-1 bg-white/5 p-1.5 rounded-full border border-white/10 shadow-inner">
+        <button onclick="showPage('home')" id="menu-home" class="px-5 py-2 rounded-full text-xs font-bold text-white bg-indigo-600 shadow-md transition-all">Home</button>
+        <button onclick="showPage('hotels')" id="menu-hotels" class="px-5 py-2 rounded-full text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all">Destination Hotels</button>
+        <button onclick="showPage('flights')" id="menu-flights" class="px-5 py-2 rounded-full text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all">Flights</button>
+        <button onclick="showPage('about')" id="menu-about" class="px-5 py-2 rounded-full text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all">About Us</button>
+      </nav>
+
+      <!-- User Account & Auth Section -->
+      <div class="flex items-center space-x-3" id="auth-header-container">
+        <!-- Injected dynamically by JavaScript -->
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Hero Banner -->
+  <div class="h-64 relative w-full bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1542296332-2e4473faf563?q=80&w=1600&auto=format&fit=crop');">
+    <div class="absolute inset-0 bg-gradient-to-b from-slate-900/60 to-slate-900/90"></div>
+    <div class="relative z-10 max-w-7xl mx-auto px-6 text-center text-white pt-12">
+      <h1 class="text-3xl md:text-5xl font-black tracking-tight drop-shadow-md">Fly Comfortably & Book Luxury Hotels Worldwide</h1>
+      <p class="text-slate-200 mt-2 text-sm md:text-base max-w-2xl mx-auto">Select your destination state, inspect hotel photos, and reserve flights instantly.</p>
+    </div>
+  </div>
+
+  <!-- Notification Banner -->
+  <div id="toast-banner" class="hidden max-w-7xl mx-auto px-6 mt-4 w-full">
+    <div id="toast-msg" class="p-4 rounded-2xl text-sm font-medium shadow-md flex justify-between items-center bg-emerald-600 text-white">
+      <span id="toast-text">Action completed successfully!</span>
+      <button onclick="hideToast()" class="text-white hover:text-slate-200 text-lg font-bold ml-4">&times;</button>
+    </div>
+  </div>
+
+  <!-- Main Content Body -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 -mt-8 grid grid-cols-1 lg:grid-cols-4 gap-6 relative z-20">
+    
+    <!-- Page Content Container -->
+    <section class="lg:col-span-3 space-y-6">
+
+      <!-- 1. HOME VIEW -->
+      <div id="page-home" class="space-y-6">
+        <div class="bg-white rounded-3xl p-6 md:p-8 shadow-xl border border-slate-100">
+          <h2 class="text-2xl font-bold text-slate-900">Plan Your Journey</h2>
+          <p class="text-sm text-slate-500 mt-1">Select where you are flying to in order to explore available destination hotels and direct flights.</p>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+            <div onclick="showPage('hotels')" class="border-2 border-slate-200 hover:border-indigo-600 rounded-2xl p-6 cursor-pointer hover:shadow-lg transition-all bg-gradient-to-br from-indigo-50/50 to-white">
+              <div class="w-12 h-12 bg-indigo-600 text-white rounded-2xl flex items-center justify-center mb-4 shadow-md">
+                <i data-lucide="building-2" class="w-6 h-6"></i>
+              </div>
+              <h3 class="text-lg font-bold text-slate-900">Destination Hotels</h3>
+              <p class="text-xs text-slate-500 mt-1">Pick a destination state, inspect room photo galleries, and reserve your hotel stay.</p>
+            </div>
+
+            <div onclick="showPage('flights')" class="border-2 border-slate-200 hover:border-indigo-600 rounded-2xl p-6 cursor-pointer hover:shadow-lg transition-all bg-gradient-to-br from-indigo-50/50 to-white">
+              <div class="w-12 h-12 bg-indigo-600 text-white rounded-2xl flex items-center justify-center mb-4 shadow-md">
+                <i data-lucide="plane-takeoff" class="w-6 h-6"></i>
+              </div>
+              <h3 class="text-lg font-bold text-slate-900">Flight Reservations</h3>
+              <p class="text-xs text-slate-500 mt-1">Book direct flights across all major states with luxury seat selection.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. DESTINATION HOTELS VIEW -->
+      <div id="page-hotels" class="hidden space-y-6">
+        <div class="bg-white rounded-3xl p-6 md:p-8 shadow-xl border border-slate-100 space-y-6">
+          
+          <div>
+            <span class="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Step 1</span>
+            <h2 class="text-2xl font-bold text-slate-900 mt-2">Select Your Destination State</h2>
+            <p class="text-sm text-slate-500">Pick the state you are flying to so we can display verified luxury hotels in that location.</p>
+            
+            <div id="state-selector-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mt-4">
+              <!-- States loaded dynamically -->
+            </div>
+          </div>
+
+          <div class="pt-6 border-t">
+            <div class="flex justify-between items-center">
+              <div>
+                <span class="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Step 2</span>
+                <h2 class="text-2xl font-bold text-slate-900 mt-2">Available Hotels in <span id="selected-state-title" class="text-indigo-600">Selected Destination</span></h2>
+              </div>
+            </div>
+            <p class="text-sm text-slate-500 mt-1">Click "View Photo Gallery" on any hotel card to inspect room pictures before picking.</p>
+
+            <div id="hotels-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
+              <!-- Hotel cards loaded dynamically -->
+            </div>
+          </div>
+
+          <!-- Hotel Checkout Form -->
+          <div id="hotel-booking-form-section" class="hidden pt-6 border-t space-y-4">
+            <h3 class="text-xl font-bold text-slate-900">Complete Reservation for <span id="form-hotel-name" class="text-indigo-600"></span></h3>
+            
+            <form onsubmit="handleHotelBookingSubmit(event)" class="space-y-4">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-slate-600 mb-1">Check-in Date</label>
+                  <input type="date" id="hotel-date" required class="border rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none w-full">
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-600 mb-1">Check-in Shift</label>
+                  <select id="hotel-time" required class="border rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none w-full">
+                    <option value="12:00 PM">Early Check-in (12:00 PM)</option>
+                    <option value="02:00 PM" selected>Standard Check-in (02:00 PM)</option>
+                    <option value="06:00 PM">Late Evening Arrival (06:00 PM)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <input type="text" id="hotel-cust-name" required placeholder="Guest Full Name" class="border rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-indigo-500 w-full">
+                <input type="email" id="hotel-cust-email" required placeholder="Guest Email Address" class="border rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-indigo-500 w-full">
+              </div>
+
+              <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 rounded-xl shadow-md transition-all cursor-pointer">
+                Confirm Hotel Room Reservation
+              </button>
+            </form>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 3. FLIGHTS VIEW -->
+      <div id="page-flights" class="hidden space-y-6">
+        <div class="bg-white rounded-3xl p-6 md:p-8 shadow-xl border border-slate-100 space-y-6">
+          <div>
+            <h2 class="text-2xl font-bold text-slate-900">Flight Routes & Schedules</h2>
+            <p class="text-sm text-slate-500 mt-1">Select your flight route and reserve your ticket.</p>
+          </div>
+
+          <div id="flights-grid" class="grid grid-cols-1 gap-4">
+            <!-- Flights rendered dynamically -->
+          </div>
+
+          <div id="flight-booking-form-section" class="hidden pt-6 border-t space-y-4">
+            <h3 class="text-xl font-bold text-slate-900">Reserve Flight: <span id="form-flight-name" class="text-indigo-600"></span></h3>
+            
+            <form onsubmit="handleFlightBookingSubmit(event)" class="space-y-4">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-slate-600 mb-1">Departure Date</label>
+                  <input type="date" id="flight-date" required class="border rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none w-full">
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-600 mb-1">Preferred Time</label>
+                  <select id="flight-time" required class="border rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none w-full">
+                    <option value="08:00 AM">Morning Departure (08:00 AM)</option>
+                    <option value="01:00 PM">Afternoon Flight (01:00 PM)</option>
+                    <option value="06:30 PM">Evening Flight (06:30 PM)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <input type="text" id="flight-cust-name" required placeholder="Passenger Full Name" class="border rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-indigo-500 w-full">
+                <input type="email" id="flight-cust-email" required placeholder="Passenger Email Address" class="border rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-indigo-500 w-full">
+              </div>
+
+              <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 rounded-xl shadow-md transition-all cursor-pointer">
+                Confirm Flight Reservation
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. ABOUT US VIEW -->
+      <div id="page-about" class="hidden space-y-6">
+        <div class="bg-white rounded-3xl p-6 md:p-8 shadow-xl border border-slate-100 space-y-6">
+          <h2 class="text-2xl font-bold text-slate-900">About EasyTravels</h2>
+          <p class="text-slate-600 leading-relaxed">EasyTravels is a next-generation travel platform designed to make booking flights and luxury destination hotels effortless. By integrating real-time photo galleries and Gemini-powered AI concierges, we allow travelers to inspect hotels in their target arrival state before reserving.</p>
+        </div>
+      </div>
+
+      <!-- 5. BOOKINGS LOG VIEW -->
+      <div id="page-admin" class="hidden space-y-6">
+        <div class="bg-white rounded-3xl p-6 md:p-8 shadow-xl border border-slate-100 space-y-4">
+          <div class="flex justify-between items-center">
+            <h2 class="text-2xl font-bold text-slate-900">Your Personal Bookings</h2>
+            <button onclick="loadBookings()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-medium transition-colors">Refresh Log</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm border-collapse">
+              <thead>
+                <tr class="border-b bg-slate-50 text-slate-500">
+                  <th class="p-3">ID</th>
+                  <th class="p-3">Type</th>
+                  <th class="p-3">Customer</th>
+                  <th class="p-3">Selection / State</th>
+                  <th class="p-3">Date</th>
+                  <th class="p-3">Status</th>
+                </tr>
+              </thead>
+              <tbody id="bookings-table-body">
+                <tr><td colspan="6" class="p-4 text-center text-slate-400">No reservations recorded yet.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- AI Concierge Sidebar -->
+    <aside class="bg-white rounded-3xl shadow-xl border border-slate-100 p-4 flex flex-col h-[580px] sticky top-20">
+      <div class="flex items-center space-x-3 pb-3 border-b">
+        <div class="bg-emerald-100 text-emerald-600 p-2.5 rounded-xl">
+          <i data-lucide="bot" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="font-bold text-slate-900">EasyTravels AI Guide</h3>
+          <p class="text-xs text-slate-500">Powered by Gemini</p>
+        </div>
+      </div>
+
+      <div id="chat-messages" class="flex-1 overflow-y-auto space-y-3 py-4 text-sm pr-1">
+        <div class="bg-slate-100 text-slate-700 p-3 rounded-2xl max-w-[88%]">
+          Hello! Welcome to EasyTravels. Ask me about hotels in Lagos, Abuja, Rivers, Kano, or Calabar!
+        </div>
+      </div>
+
+      <form onsubmit="handleChatSubmit(event)" class="flex space-x-2 pt-2 border-t">
+        <input type="text" id="chat-input" placeholder="Ask AI..." class="flex-1 border rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+        <button type="submit" class="bg-indigo-600 text-white p-2.5 rounded-xl hover:bg-indigo-700 transition-colors cursor-pointer">
+          <i data-lucide="send" class="w-4 h-4"></i>
+        </button>
+      </form>
+    </aside>
+
+  </main>
+
+  <!-- Sign In / Sign Up Auth Modal Drawer -->
+  <div id="auth-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-5 shadow-2xl">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 id="auth-modal-title" class="text-xl font-bold text-slate-900">Sign In to EasyTravels</h3>
+        <button onclick="closeAuthModal()" class="text-slate-400 hover:text-slate-700 text-2xl font-bold p-1">&times;</button>
+      </div>
+
+      <!-- Sign In Form -->
+      <form id="login-form" onsubmit="handleLoginSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1">Username</label>
+          <input type="text" id="login-username" required class="border rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none w-full">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1">Password</label>
+          <input type="password" id="login-password" required class="border rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none w-full">
+        </div>
+        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl shadow-md transition-all">Sign In</button>
+        <p class="text-xs text-center text-slate-500">Don't have an account? <button type="button" onclick="toggleAuthMode('signup')" class="text-indigo-600 font-bold underline">Create Account</button></p>
+      </form>
+
+      <!-- Sign Up Form -->
+      <form id="signup-form" onsubmit="handleSignupSubmit(event)" class="hidden space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1">Username</label>
+          <input type="text" id="signup-username" required class="border rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none w-full">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1">Email Address</label>
+          <input type="email" id="signup-email" required class="border rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none w-full">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1">Password</label>
+          <input type="password" id="signup-password" required class="border rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none w-full">
+        </div>
+        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-xl shadow-md transition-all">Create Account</button>
+        <p class="text-xs text-center text-slate-500">Already registered? <button type="button" onclick="toggleAuthMode('login')" class="text-indigo-600 font-bold underline">Sign In</button></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Photo Gallery Modal -->
+  <div id="gallery-modal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-3xl w-full p-6 space-y-4 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+      <div class="flex justify-between items-center border-b pb-3">
+        <div>
+          <h3 id="gallery-modal-title" class="text-xl font-bold text-slate-900">Hotel Photo Gallery</h3>
+          <p id="gallery-modal-sub" class="text-xs text-slate-500"></p>
+        </div>
+        <button onclick="closeGalleryModal()" class="text-slate-400 hover:text-slate-700 text-2xl font-bold p-1">&times;</button>
+      </div>
+      
+      <div class="h-72 w-full rounded-2xl overflow-hidden bg-slate-100 flex items-center justify-center">
+        <img id="gallery-active-img" src="" alt="Hotel preview" class="w-full h-full object-cover">
+      </div>
+
+      <div id="gallery-thumbnails" class="grid grid-cols-4 gap-2 pt-2"></div>
+
+      <div class="pt-2 border-t flex justify-end">
+        <button onclick="closeGalleryModal()" class="px-5 py-2.5 bg-indigo-600 text-white text-sm font-semibold rounded-xl hover:bg-indigo-700">Close Gallery</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentUser = null;
+    let appData = { states: [], hotels: [], flights: [] };
+    let selectedStateId = 'lagos';
+    let selectedHotel = null;
+    let selectedFlight = null;
+
+    function showToast(message, isError = false) {
+      const banner = document.getElementById('toast-banner');
+      const msgBox = document.getElementById('toast-msg');
+      const text = document.getElementById('toast-text');
+      
+      text.innerText = message;
+      msgBox.className = isError 
+        ? "p-4 rounded-2xl text-sm font-medium shadow-md flex justify-between items-center bg-rose-500 text-white"
+        : "p-4 rounded-2xl text-sm font-medium shadow-md flex justify-between items-center bg-emerald-600 text-white";
+      banner.classList.remove('hidden');
+    }
+
+    function hideToast() {
+      document.getElementById('toast-banner').classList.add('hidden');
+    }
+
+    async function checkAuthStatus() {
+      try {
+        const res = await fetch('/api/auth-status/');
+        const data = await res.json();
+        const container = document.getElementById('auth-header-container');
+
+        if (data.isAuthenticated) {
+          currentUser = data.username;
+          container.innerHTML = `
+            <button onclick="showPage('admin')" id="menu-admin" class="flex items-center space-x-2 bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/30 px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-sm">
+              <i data-lucide="clipboard-list" class="w-4 h-4"></i>
+              <span>Bookings Log</span>
+            </button>
+            <div class="flex items-center space-x-2 bg-white/10 px-3 py-1.5 rounded-xl border border-white/20 text-white text-xs">
+              <i data-lucide="user" class="w-4 h-4 text-emerald-400"></i>
+              <span class="font-bold">${data.username}</span>
+            </div>
+            <button onclick="handleLogout()" class="text-xs text-rose-300 hover:text-white bg-rose-500/20 hover:bg-rose-600 px-3 py-1.5 rounded-xl border border-rose-500/30 font-semibold transition-all">Sign Out</button>
+          `;
+        } else {
+          currentUser = null;
+          container.innerHTML = `
+            <button onclick="openAuthModal('login')" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-xl shadow-sm transition-all">Sign In</button>
+            <button onclick="openAuthModal('signup')" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl shadow-sm transition-all">Create Account</button>
+          `;
+        }
+        if (window.lucide) lucide.createIcons();
+      } catch (err) {
+        console.error('Error checking auth:', err);
+      }
+    }
+
+    function openAuthModal(mode) {
+      toggleAuthMode(mode);
+      document.getElementById('auth-modal').classList.remove('hidden');
+    }
+
+    function closeAuthModal() {
+      document.getElementById('auth-modal').classList.add('hidden');
+    }
+
+    function toggleAuthMode(mode) {
+      const isLogin = mode === 'login';
+      document.getElementById('auth-modal-title').innerText = isLogin ? 'Sign In to EasyTravels' : 'Create an Account';
+      document.getElementById('login-form').classList.toggle('hidden', !isLogin);
+      document.getElementById('signup-form').classList.toggle('hidden', isLogin);
+    }
+
+    async function handleLoginSubmit(e) {
+      e.preventDefault();
+      const username = document.getElementById('login-username').value.trim();
+      const password = document.getElementById('login-password').value.trim();
+
+      const res = await fetch('/api/login/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        showToast(`Welcome back, ${data.username}!`);
+        closeAuthModal();
+        checkAuthStatus();
+      } else {
+        showToast(data.error || 'Login failed.', true);
+      }
+    }
+
+    async function handleSignupSubmit(e) {
+      e.preventDefault();
+      const username = document.getElementById('signup-username').value.trim();
+      const email = document.getElementById('signup-email').value.trim();
+      const password = document.getElementById('signup-password').value.trim();
+
+      const res = await fetch('/api/signup/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        showToast(`Account created successfully! Welcome ${data.username}`);
+        closeAuthModal();
+        checkAuthStatus();
+      } else {
+        showToast(data.error || 'Signup failed.', true);
+      }
+    }
+
+    async function handleLogout() {
+      await fetch('/api/logout/');
+      showToast('Logged out successfully.');
+      checkAuthStatus();
+      showPage('home');
+    }
+
+    function showPage(pageId) {
+      ['home', 'hotels', 'flights', 'about', 'admin'].forEach(p => {
+        const el = document.getElementById(`page-${p}`);
+        if (el) el.classList.toggle('hidden', p !== pageId);
+
+        const btn = document.getElementById(`menu-${p}`);
+        if (btn) {
+          if (p === pageId) {
+            btn.className = "px-5 py-2 rounded-full text-xs font-bold text-white bg-indigo-600 shadow-md transition-all";
+          } else {
+            btn.className = "px-5 py-2 rounded-full text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all";
+          }
+        }
+      });
+
+      if (pageId === 'admin') loadBookings();
+    }
+
+    async function fetchAppData() {
+      try {
+        const res = await fetch('/api/data/');
+        appData = await res.json();
+        renderStateSelectors();
+        renderHotels();
+        renderFlights();
+      } catch (err) {
+        console.error('Error fetching API data:', err);
+      }
+    }
+
+    function renderStateSelectors() {
+      const container = document.getElementById('state-selector-grid');
+      if (!appData.states || !appData.states.length) return;
+
+      container.innerHTML = appData.states.map(s => `
+        <div onclick="selectState('${s.id}')" id="state-btn-${s.id}" class="border-2 rounded-2xl p-3 text-center cursor-pointer transition-all ${s.id === selectedStateId ? 'border-indigo-600 bg-indigo-50 font-bold text-indigo-700 shadow-sm' : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'}">
+          <p class="text-xs uppercase font-bold tracking-wider">${s.code}</p>
+          <p class="text-sm mt-1">${s.name}</p>
+        </div>
+      `).join('');
+    }
+
+    function selectState(stateId) {
+      selectedStateId = stateId;
+      renderStateSelectors();
+      renderHotels();
+      document.getElementById('hotel-booking-form-section').classList.add('hidden');
+      selectedHotel = null;
+    }
+
+    function renderHotels() {
+      const targetState = appData.states.find(s => s.id === selectedStateId);
+      document.getElementById('selected-state-title').innerText = targetState ? targetState.name : '';
+
+      const filtered = appData.hotels.filter(h => h.state_id === selectedStateId);
+      const grid = document.getElementById('hotels-grid');
+
+      if (!filtered.length) {
+        grid.innerHTML = '<p class="col-span-2 text-slate-400 text-sm italic py-4">No hotels available for this state.</p>';
+        return;
+      }
+
+      grid.innerHTML = filtered.map(h => `
+        <div class="border-2 border-slate-200 rounded-3xl overflow-hidden hover:shadow-lg transition-all bg-white flex flex-col justify-between">
+          <div>
+            <div class="h-44 w-full relative bg-slate-100 overflow-hidden">
+              <img src="${h.images[0]}" alt="${h.name}" class="w-full h-full object-cover">
+              <span class="absolute top-3 right-3 bg-slate-900/80 text-white text-xs font-bold px-2.5 py-1 rounded-full">${h.rating}</span>
+            </div>
+            <div class="p-5 space-y-2">
+              <h4 class="font-bold text-lg text-slate-900">${h.name}</h4>
+              <p class="text-xs text-slate-400 flex items-center"><i data-lucide="map-pin" class="w-3.5 h-3.5 mr-1 inline"></i>${h.address}</p>
+              <p class="text-xs text-slate-600 leading-relaxed mt-2">${h.description}</p>
+            </div>
+          </div>
+          <div class="p-5 pt-0 space-y-3">
+            <p class="text-xl font-black text-indigo-600">${h.price}</p>
+            <div class="grid grid-cols-2 gap-2">
+              <button onclick="openGalleryModal('${h.id}')" type="button" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2.5 rounded-xl transition-colors">
+                Photo Gallery (${h.images.length})
+              </button>
+              <button onclick="selectHotelForBooking('${h.id}')" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-2.5 rounded-xl transition-colors shadow-sm">
+                Pick Hotel Room
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function openGalleryModal(hotelId) {
+      const hotel = appData.hotels.find(h => h.id === hotelId);
+      if (!hotel) return;
+
+      document.getElementById('gallery-modal-title').innerText = hotel.name;
+      document.getElementById('gallery-modal-sub').innerText = hotel.address;
+      document.getElementById('gallery-active-img').src = hotel.images[0];
+
+      const thumbs = document.getElementById('gallery-thumbnails');
+      thumbs.innerHTML = hotel.images.map((imgUrl) => `
+        <div onclick="setGalleryActiveImg('${imgUrl}')" class="h-16 rounded-xl overflow-hidden cursor-pointer border-2 hover:border-indigo-600 transition-all">
+          <img src="${imgUrl}" class="w-full h-full object-cover">
+        </div>
+      `).join('');
+
+      document.getElementById('gallery-modal').classList.remove('hidden');
+    }
+
+    function setGalleryActiveImg(url) {
+      document.getElementById('gallery-active-img').src = url;
+    }
+
+    function closeGalleryModal() {
+      document.getElementById('gallery-modal').classList.add('hidden');
+    }
+
+    function selectHotelForBooking(hotelId) {
+      if (!currentUser) {
+        showToast('Please Sign In or Create an Account first to book a hotel!', true);
+        openAuthModal('login');
+        return;
+      }
+
+      selectedHotel = appData.hotels.find(h => h.id === hotelId);
+      if (!selectedHotel) return;
+
+      document.getElementById('form-hotel-name').innerText = `${selectedHotel.name} (${selectedHotel.price})`;
+      const formSec = document.getElementById('hotel-booking-form-section');
+      formSec.classList.remove('hidden');
+      formSec.scrollIntoView({ behavior: 'smooth' });
+      showToast(`Selected: ${selectedHotel.name}`);
+    }
+
+    async function handleHotelBookingSubmit(e) {
+      e.preventDefault();
+      if (!currentUser) {
+        showToast('Please Sign In first to confirm your reservation!', true);
+        openAuthModal('login');
+        return;
+      }
+      if (!selectedHotel) return showToast('Please select a hotel room first!', true);
+
+      const stateObj = appData.states.find(s => s.id === selectedStateId);
+      const res = await fetch('/api/bookings/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          bookingType: 'Hotel',
+          serviceTitle: selectedHotel.name,
+          destinationState: stateObj ? stateObj.name : '',
+          date: document.getElementById('hotel-date').value,
+          time: document.getElementById('hotel-time').value,
+          customerName: document.getElementById('hotel-cust-name').value,
+          customerEmail: document.getElementById('hotel-cust-email').value,
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        showToast(`Hotel Reservation Confirmed! ID: ${data.booking_id}`);
+        document.getElementById('hotel-booking-form-section').classList.add('hidden');
+        selectedHotel = null;
+      } else {
+        showToast(data.error || 'Failed to complete hotel reservation.', true);
+      }
+    }
+
+    function renderFlights() {
+      const container = document.getElementById('flights-grid');
+      if (!appData.flights || !appData.flights.length) return;
+
+      container.innerHTML = appData.flights.map(f => `
+        <div class="border-2 border-slate-200 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 bg-white hover:border-indigo-500 transition-all">
+          <div class="flex items-center space-x-4">
+            <div class="p-3 bg-indigo-50 text-indigo-600 rounded-2xl">
+              <i data-lucide="plane-takeoff" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <p class="font-bold text-slate-900">${f.from} ➔ ${f.to}</p>
+              <p class="text-xs text-slate-400 mt-0.5">${f.airline} • Duration: ${f.duration}</p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-4 w-full md:w-auto justify-between">
+            <span class="text-xl font-black text-indigo-600">${f.price}</span>
+            <button onclick="selectFlightForBooking('${f.id}')" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-colors">
+              Book Ticket
+            </button>
+          </div>
+        </div>
+      `).join('');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function selectFlightForBooking(flightId) {
+      if (!currentUser) {
+        showToast('Please Sign In or Create an Account first to book a flight ticket!', true);
+        openAuthModal('login');
+        return;
+      }
+
+      selectedFlight = appData.flights.find(f => f.id === flightId);
+      if (!selectedFlight) return;
+
+      document.getElementById('form-flight-name').innerText = `${selectedFlight.from} to ${selectedFlight.to} (${selectedFlight.price})`;
+      const formSec = document.getElementById('flight-booking-form-section');
+      formSec.classList.remove('hidden');
+      formSec.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    async function handleFlightBookingSubmit(e) {
+      e.preventDefault();
+      if (!currentUser) {
+        showToast('Please Sign In first to confirm your reservation!', true);
+        openAuthModal('login');
+        return;
+      }
+      if (!selectedFlight) return showToast('Please select a flight route first!', true);
+
+      const res = await fetch('/api/bookings/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          bookingType: 'Flight',
+          serviceTitle: `${selectedFlight.from} to ${selectedFlight.to}`,
+          departureCity: selectedFlight.from,
+          destinationState: selectedFlight.to,
+          date: document.getElementById('flight-date').value,
+          time: document.getElementById('flight-time').value,
+          customerName: document.getElementById('flight-cust-name').value,
+          customerEmail: document.getElementById('flight-cust-email').value,
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        showToast(`Flight Reservation Confirmed! ID: ${data.booking_id}`);
+        document.getElementById('flight-booking-form-section').classList.add('hidden');
+        selectedFlight = null;
+      } else {
+        showToast(data.error || 'Failed to complete flight reservation.', true);
+      }
+    }
+
+    async function handleChatSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('chat-input');
+      const msg = input.value.trim();
+      if (!msg) return;
+
+      const chatBox = document.getElementById('chat-messages');
+      chatBox.innerHTML += `<div class="bg-indigo-600 text-white p-3 rounded-2xl ml-auto max-w-[88%] shadow-sm">${msg}</div>`;
+      input.value = '';
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      try {
+        const res = await fetch('/api/chat/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: msg })
+        });
+        const data = await res.json();
+        chatBox.innerHTML += `<div class="bg-slate-100 text-slate-700 p-3 rounded-2xl max-w-[88%] shadow-sm">${data.reply}</div>`;
+      } catch (err) {
+        chatBox.innerHTML += `<div class="bg-slate-100 text-slate-700 p-3 rounded-2xl max-w-[88%] shadow-sm">Connection error.</div>`;
+      }
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    async function loadBookings() {
+      if (!currentUser) {
+        showToast('Please Sign In to view your booking log.', true);
+        openAuthModal('login');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/bookings/');
+        const bookings = await res.json();
+        const tbody = document.getElementById('bookings-table-body');
+
+        if (!bookings.length) {
+          tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-400">No personal reservations recorded yet.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = bookings.map(b => `
+          <tr class="border-b text-sm hover:bg-slate-50 transition-colors">
+            <td class="p-3 font-mono text-xs font-bold text-indigo-600">${b.booking_id}</td>
+            <td class="p-3"><span class="bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full text-xs font-medium">${b.booking_type}</span></td>
+            <td class="p-3"><span class="font-semibold text-slate-900">${b.customer_name}</span><br><span class="text-xs text-slate-400">${b.customer_email}</span></td>
+            <td class="p-3 font-medium text-slate-800">${b.service_title} ${b.destination_state ? `<br><span class="text-xs text-slate-400">Dest: ${b.destination_state}</span>` : ''}</td>
+            <td class="p-3 text-slate-600">${b.date} @ ${b.time}</td>
+            <td class="p-3"><span class="bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full text-xs font-semibold">${b.status}</span></td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error('Error loading bookings:', err);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.lucide) lucide.createIcons();
+      checkAuthStatus();
+      fetchAppData();
+    });
+  </script>
+</body>
+</html>
